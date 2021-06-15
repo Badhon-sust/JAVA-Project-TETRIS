@@ -1,0 +1,45 @@
+package com.salifm.tetris;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.*;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.JOptionPane;
+import  javax.swing.UIManager;
+
+import com.salifm.tetris.Tetromino.Tetrominoes;
+
+public class GameBoardPanel extends JPanel implements ActionListener {
+    private static final int BoardWidth = 10;    // game board x size
+    private static final int BoardHeight = 22;    // game board y size
+
+    // game status & timer
+    private Timer timer;
+    private boolean isFallingDone = false;
+    private boolean isStarted = false;
+    private boolean isPaused = false;
+    private int currentScore = 0; // removed lines == score
+
+    // position of current block
+    private int curX = 0;
+    private int curY = 0;
+
+    // current tetromino
+    private Tetromino curBlock;
+
+    // logical game block
+    private Tetrominoes[] gameBoard;
+    private Color[] colorTable;
+
+    // adjusting game status
+    private String currentStatus;
+    private String currentLevel;
+    private int currentTimerResolution;
