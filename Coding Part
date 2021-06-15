@@ -43,3 +43,83 @@ public class GameBoardPanel extends JPanel implements ActionListener {
     private String currentStatus;
     private String currentLevel;
     private int currentTimerResolution;
+    
+    
+    
+    private GameWindow tetrisFrameD;
+
+
+    public GameBoardPanel(GameWindow tetrisFrame, int timerResolution) {
+
+        setFocusable(true);
+        setBackground(new Color(0, 30, 30));
+        curBlock = new Tetromino();
+        timer = new Timer(timerResolution, this);
+        timer.start();    // activate timer
+        currentTimerResolution = timerResolution;
+
+        gameBoard = new Tetrominoes[BoardWidth * BoardHeight];
+
+        // colour of tetrominoes
+        colorTable = new Color[]{
+                new Color(0, 0, 0), new Color(164, 135, 255),
+                new Color(255, 128, 0), new Color(255, 0, 0),
+                new Color(32, 128, 255), new Color(255, 0, 255),
+                new Color(255, 255, 0), new Color(0, 255, 0)
+        };
+
+        // keyboard listener
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (!isStarted || curBlock.getShape() == Tetrominoes.NO_BLOCK) {
+                    return;
+                }
+
+                int keycode = e.getKeyCode();
+
+                if (keycode == 'p' || keycode == 'P') {
+                    pause();
+                    return;
+                }
+
+                if (isPaused) {
+                    return;
+                }
+
+                switch (keycode) {
+                    case 'a':
+                    case 'A':
+                    case KeyEvent.VK_LEFT:
+                        isMovable(curBlock, curX - 1, curY);
+                        break;
+                    case 'd':
+                    case 'D':
+                    case KeyEvent.VK_RIGHT:
+                        isMovable(curBlock, curX + 1, curY);
+                        break;
+                    case 'w':
+                    case 'W':
+                    case KeyEvent.VK_UP:
+                        isMovable(curBlock.rotateRight(), curX, curY);
+                        break;
+                    case 's':
+                    case 'S':
+                    case KeyEvent.VK_DOWN:
+                        advanceOneLine();
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        advanceToEnd();
+                        break;
+                    case 'p':
+                    case 'P':
+                        pause();
+                        break;
+                }
+
+            }
+        });
+
+        tetrisFrameD = tetrisFrame;
+        initBoard();
+    }
