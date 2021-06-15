@@ -214,4 +214,63 @@ public class GameBoardPanel extends JPanel implements ActionListener {
 
         repaint();
     }
+    
+    
+    // calculates actual size of tetromino on screen
+    private int blockWidth() {
+        return (int) getSize().getWidth() / BoardWidth;
+    }
+
+    private int blockHeight() {
+        return (int) getSize().getHeight() / BoardHeight;
+    }
+
+    // current tetromino position in array (atom)
+    Tetrominoes curTetrominoPos(int x, int y) {
+        return gameBoard[(y * BoardWidth) + x];
+    }
+
+    @Override
+    public void paint(Graphics g) {
+
+        super.paint(g);
+
+        if (!isPaused) {
+            currentStatus = "Score: " + currentScore;
+            currentLevel = "Level: " + (currentScore / 10 + 1);
+        } else {
+            currentStatus = "PAUSED";
+            currentLevel = "";
+        }
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Consolas", Font.PLAIN, 28));
+        g.drawString(currentStatus, 15, 35);
+        g.drawString(currentLevel, 15, 70);
+
+        Dimension size = getSize();
+        int boardTop = (int) size.getHeight() - BoardHeight * blockHeight();
+
+        // rendering - shadow of tetromino
+        int tempY = curY;
+        while (tempY > 0) {
+            if (!atomIsMovable(curBlock, curX, tempY - 1, false))
+                break;
+            tempY--;
+        }
+        for (int i = 0; i < 4; i++) {
+            int x = curX + curBlock.getX(i);
+            int y = tempY - curBlock.getY(i);
+            drawTetromino(g, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(),
+                    true);
+        }
+
+        // rendering - game board
+        for (int i = 0; i < BoardHeight; i++) {
+            for (int j = 0; j < BoardWidth; j++) {
+                Tetrominoes shape = curTetrominoPos(j, BoardHeight - i - 1);
+                if (shape != Tetrominoes.NO_BLOCK)
+                    drawTetromino(g, 0 + j * blockWidth(), boardTop + i * blockHeight(), shape, false);
+            }
+        }
 
