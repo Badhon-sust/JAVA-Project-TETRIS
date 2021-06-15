@@ -123,3 +123,95 @@ public class GameBoardPanel extends JPanel implements ActionListener {
         tetrisFrameD = tetrisFrame;
         initBoard();
     }
+    
+    // adjusting game level
+    private void setResolution() {
+        // fix me later! it's lame :P"
+
+        switch (currentScore / 10) {
+            case 10:
+                currentTimerResolution = 100;
+                break;
+            case 9:
+                currentTimerResolution = 130;
+                break;
+            case 8:
+                currentTimerResolution = 160;
+                break;
+            case 7:
+                currentTimerResolution = 190;
+                break;
+            case 6:
+                currentTimerResolution = 220;
+                break;
+            case 5:
+                currentTimerResolution = 250;
+                break;
+            case 4:
+                currentTimerResolution = 280;
+                break;
+            case 3:
+                currentTimerResolution = 310;
+                break;
+            case 2:
+                currentTimerResolution = 340;
+                break;
+            case 1:
+                currentTimerResolution = 370;
+                break;
+            case 0:
+                currentTimerResolution = 370;
+                break;
+        }
+
+        timer.setDelay(currentTimerResolution);
+
+    }
+
+    // initialize game board
+    private void initBoard() {
+        for (int i = 0; i < BoardWidth * BoardHeight; i++) {
+            gameBoard[i] = Tetrominoes.NO_BLOCK;
+        }
+    }
+
+    // timer callback
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (isFallingDone) {
+            isFallingDone = !isFallingDone; // toggle status
+            newTetromino();
+        } else {
+            advanceOneLine();
+        }
+    }
+
+    public void start() {
+        if (isPaused) {
+            return;
+        }
+
+        isStarted = true;
+        isFallingDone = false;
+        currentScore = 0;
+        initBoard();
+
+        newTetromino();
+        timer.start();
+    }
+
+    public void pause() {
+        if (!isStarted) {
+            return;
+        }
+
+        isPaused = !isPaused;
+        if (isPaused) {
+            timer.stop();
+        } else {
+            timer.start();
+        }
+
+        repaint();
+    }
+
