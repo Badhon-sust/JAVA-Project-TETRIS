@@ -330,4 +330,74 @@ public class GameBoardPanel extends JPanel implements ActionListener {
 
     }
 
+  / true - actual tetromino pos
+    // flase - shadow pos
+    private boolean atomIsMovable(Tetromino chkBlock, int chkX, int chkY, boolean flag) {
+        for (int i = 0; i < 4; i++) {
+            int x = chkX + chkBlock.getX(i);
+            int y = chkY - chkBlock.getY(i);
+            if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
+                return false;
+            if (curTetrominoPos(x, y) != Tetrominoes.NO_BLOCK) {
+                return false;
+            }
+        }
+
+        if (flag) {
+            curBlock = chkBlock;
+            curX = chkX;
+            curY = chkY;
+            repaint();
+        }
+
+        return true;
+    }
+
+    private boolean isMovable(Tetromino chkBlock, int chkX, int chkY) {
+        return atomIsMovable(chkBlock, chkX, chkY, true);
+    }
+
+    private void newTetromino() {
+        curBlock.setRandomShape();
+        curX = BoardWidth / 2 + 1;
+        curY = BoardHeight - 1 + curBlock.minY();
+
+        if (!isMovable(curBlock, curX, curY)) {
+            curBlock.setShape(Tetrominoes.NO_BLOCK);
+            timer.stop();
+            isStarted = false;
+            GameOver(currentScore);
+        }
+    }
+
+    
+    private void tetrominoFixed() {
+        for (int i = 0; i < 4; i++) {
+            int x = curX + curBlock.getX(i);
+            int y = curY - curBlock.getY(i);
+            gameBoard[(y * BoardWidth) + x] = curBlock.getShape();
+        }
+
+        removeFullLines();
+
+        if (!isFallingDone) {
+            newTetromino();
+        }
+    }
+
+    private void advanceOneLine() {
+        if (!isMovable(curBlock, curX, curY - 1)) {
+            tetrominoFixed();
+        }
+    }
+
+    private void advanceToEnd() {
+        int tempY = curY;
+        while (tempY > 0) {
+            if (!isMovable(curBlock, curX, tempY - 1))
+                break;
+            --tempY;
+        }
+        tetrominoFixed();
+    }
 
